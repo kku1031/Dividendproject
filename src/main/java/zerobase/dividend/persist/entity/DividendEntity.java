@@ -1,6 +1,7 @@
 package zerobase.dividend.persist.entity;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import zerobase.dividend.model.Dividend;
 
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Entity(name = "DIVIDEND")
 @Getter
 @ToString
+@NoArgsConstructor
 public class DividendEntity {
 
     @Id
