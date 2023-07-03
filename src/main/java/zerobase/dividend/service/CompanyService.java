@@ -3,6 +3,7 @@ package zerobase.dividend.service;
 import lombok.AllArgsConstructor;
 import org.apache.commons.collections4.Trie;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -41,7 +42,7 @@ public class CompanyService {
     private Company storeCompanyAndDividend(String ticker) {
         // ticker를 기준으로 회사를 스크래핑
         Company company = this.yahooFinanceScraper.scrapCompanyByTicker(ticker);
-        if(ObjectUtils.isEmpty(company)) {
+        if (ObjectUtils.isEmpty(company)) {
             throw new RuntimeException("failed to scrap ticker -> " + ticker);
         }
 
@@ -69,7 +70,7 @@ public class CompanyService {
     }
 
     //자동 완성 회사명 조회 - trie
-    public  List<String> autoComplete(String keyword) {
+    public List<String> autoComplete(String keyword) {
         return (List<String>) tries.prefixMap(keyword).keySet()
                 .stream()
                 .limit(10)              //회사 정보가 많아질 수 있으므로 10개만 반환.
@@ -79,5 +80,14 @@ public class CompanyService {
     //자동 완성 키워드 삭제 - trie
     public void deleteAutocompleteKeyword(String keyword) {
         tries.remove(keyword);
+    }
+
+    //자동 완성 대 소문자 구분 X - like 연산자
+    public List<String> getCompanyNamesByKeyword(String keyword) {
+        Pageable limit = PageRequest.of(0, 10);
+        Page<CompanyEntity> companyEntities = companyRepository.findByNameStartingWithIgnoreCase(keyword, limit);
+        return companyEntities.stream()
+                                .map(e -> e.getName())
+                                .collect(Collectors.toList());
     }
 }

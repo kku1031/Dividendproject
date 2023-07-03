@@ -22,7 +22,8 @@ public class CompanyController {
     //배당금 검색 : 자동완성
     @GetMapping("/autocomplete")
     public ResponseEntity<?> autocomplete(@RequestParam String keyword) {
-        List<String> result = companyService.autoComplete(keyword);
+//        List<String> result = companyService.autoComplete(keyword);           //아파치 trie 라이브러리 자동완성 사용 : 서버 메모리에 추가 저장
+        List<String> result = companyService.getCompanyNamesByKeyword(keyword); //like 연산자 자동완성 사용 : DB에서 데이터 연산 - 데이터 양과 연산이 많으면 부하가니까 사용 X
         return ResponseEntity.ok(result);
     }
 
