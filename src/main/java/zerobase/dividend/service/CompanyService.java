@@ -1,10 +1,12 @@
 package zerobase.dividend.service;
 
 import lombok.AllArgsConstructor;
-import zerobase.dividend.model.Company;
-import zerobase.dividend.model.ScrapedResult;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import zerobase.dividend.model.Company;
+import zerobase.dividend.model.ScrapedResult;
 import zerobase.dividend.persist.CompanyRepository;
 import zerobase.dividend.persist.DividendRepository;
 import zerobase.dividend.persist.entity.CompanyEntity;
@@ -44,12 +46,19 @@ public class CompanyService {
         //해당 회사가 존재할 경우, 회사의 배당금 정보 스크래핑.
         ScrapedResult scrapedResult = this.yahooFinanceScraper.scrap(company);
 
-        //스크래핑 결과 저장 -> 반환.
+        //스크래핑 결과는 Entity타입으로 저장이 되어야함.
         CompanyEntity companyEntity = this.companyRepository.save(new CompanyEntity(company));
         List<DividendEntity> dividendEntities = scrapedResult.getDividends().stream()   //dividend item 하나가 e -> foreach 처럼
                 .map(e -> new DividendEntity(companyEntity.getId(), e)) //collection element(요소)들 다른 값으로 매핑해야할 때.
                 .collect(Collectors.toList());
         this.dividendRepository.saveAll(dividendEntities);
         return company;
+    }
+
+    //회사 리스트 조회
+    public Page<CompanyEntity> getAllCompany(Pageable pageable) {
+        //실직적으로 회사 정보는 수천 수만가지니까 필요한 부분만 노출 시킬 필요성있음 -> Pageable 기능 구현
+        return this.companyRepository.findAll(pageable);
+
     }
 }
