@@ -1,6 +1,7 @@
 package zerobase.dividend.service;
 
 import lombok.AllArgsConstructor;
+import org.apache.commons.collections4.Trie;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,10 +17,11 @@ import zerobase.dividend.scraper.Scraper;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+@Service            //싱글톤 관리 : 프로그램 실행되는 동안, instance는 하나만 사용됨
 @AllArgsConstructor //Bean이 생성될 때 사용
 public class CompanyService {
 
+    private final Trie tries;
     private final Scraper yahooFinanceScraper;
 
     private final CompanyRepository companyRepository;
@@ -59,6 +61,23 @@ public class CompanyService {
     public Page<CompanyEntity> getAllCompany(Pageable pageable) {
         //실직적으로 회사 정보는 수천 수만가지니까 필요한 부분만 노출 시킬 필요성있음 -> Pageable 기능 구현
         return this.companyRepository.findAll(pageable);
+    }
 
+    //자동 완성(데이터 저장) - trie
+    public void addAutocompleteKeyword(String keyword) {
+        tries.put(keyword, null); //아파치에서 구현된 tri 추가기능 : value값 넣을 게 없고 딱 keyword만 받아오면됨.
+    }
+
+    //자동 완성 회사명 조회 - trie
+    public  List<String> autoComplete(String keyword) {
+        return (List<String>) tries.prefixMap(keyword).keySet()
+                .stream()
+                .limit(10)              //회사 정보가 많아질 수 있으므로 10개만 반환.
+                .collect(Collectors.toList());
+    }
+
+    //자동 완성 키워드 삭제 - trie
+    public void deleteAutocompleteKeyword(String keyword) {
+        tries.remove(keyword);
     }
 }

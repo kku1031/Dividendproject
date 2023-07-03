@@ -22,7 +22,8 @@ public class CompanyController {
     //배당금 검색 : 자동완성
     @GetMapping("/autocomplete")
     public ResponseEntity<?> autocomplete(@RequestParam String keyword) {
-        return null;
+        List<String> result = companyService.autoComplete(keyword);
+        return ResponseEntity.ok(result);
     }
 
     //회사 리스트 조회
@@ -41,6 +42,7 @@ public class CompanyController {
         }
 
         Company company = this.companyService.save(ticker);
+        companyService.addAutocompleteKeyword(company.getName());
 
         return ResponseEntity.ok(company);
     }

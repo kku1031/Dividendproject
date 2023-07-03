@@ -10,9 +10,7 @@ import zerobase.dividend.persist.DividendRepository;
 import zerobase.dividend.persist.entity.CompanyEntity;
 import zerobase.dividend.persist.entity.DividendEntity;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
