@@ -1,4 +1,4 @@
-package web;
+package zerobase.dividend.web;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

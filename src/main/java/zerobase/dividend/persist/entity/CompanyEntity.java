@@ -1,8 +1,9 @@
-package persist.entity; //DB와 직접적으로 매핑 되기 위한 클래스.
+package zerobase.dividend.persist.entity; //DB와 직접적으로 매핑 되기 위한 클래스.
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import zerobase.dividend.model.Company;
 
 import javax.persistence.*;
 
@@ -21,5 +22,8 @@ public class CompanyEntity {
 
     private String name;    //회사명
 
-
+    public CompanyEntity(Company company) {
+        this.ticker = company.getTicker();
+        this.name = company.getName();
+    }
 }

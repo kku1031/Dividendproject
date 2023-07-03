@@ -1,17 +1,18 @@
-package persist.entity;
+package zerobase.dividend.persist.entity;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
+import zerobase.dividend.model.Dividend;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.time.LocalDateTime;
 
 @Entity(name = "DIVIDEND")
 @Getter
 @ToString
-@NoArgsConstructor
-
 public class DividendEntity {
 
     @Id
@@ -24,5 +25,9 @@ public class DividendEntity {
 
     private String dividend;        //배당금 금액
 
-
+    public DividendEntity(Long companyId, Dividend dividend) {
+        this.companyId = companyId;
+        this.date = dividend.getDate();
+        this.dividend = dividend.getDividend();
+    }
 }

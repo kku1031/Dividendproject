@@ -1,9 +1,7 @@
-package model;
+package zerobase.dividend.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import model.Company;
-import model.Dividend;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,7 @@
-package scraper;
+package zerobase.dividend.scraper;
 
-import model.Company;
-import model.ScrapedResult;
+import zerobase.dividend.model.Company;
+import zerobase.dividend.model.ScrapedResult;
 
 public interface Scraper {
     Company scrapCompanyByTicker(String ticker);

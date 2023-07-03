@@ -1,21 +1,22 @@
-package scraper;
+package zerobase.dividend.scraper;
 
-import model.Company;
-import model.Dividend;
-import model.ScrapedResult;
-import model.constants.Month;
+import zerobase.dividend.model.Company;
+import zerobase.dividend.model.Dividend;
+import zerobase.dividend.model.ScrapedResult;
+import zerobase.dividend.model.constants.Month;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component //bean으로 선언해서 사용
 public class YahooFinanceScraper implements Scraper{
 
     //상수값 변수 명 : 대문자.
