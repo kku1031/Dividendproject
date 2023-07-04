@@ -7,9 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor //역직렬화가 필요한 객체
 public class Company {
 
     private String ticker;

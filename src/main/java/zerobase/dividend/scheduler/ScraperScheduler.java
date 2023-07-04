@@ -2,10 +2,13 @@ package zerobase.dividend.scheduler;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import zerobase.dividend.model.Company;
 import zerobase.dividend.model.ScrapedResult;
+import zerobase.dividend.model.constants.CacheKey;
 import zerobase.dividend.persist.CompanyRepository;
 import zerobase.dividend.persist.DividendRepository;
 import zerobase.dividend.persist.entity.CompanyEntity;
@@ -16,6 +19,7 @@ import java.util.List;
 
 @Slf4j
 @Component
+@EnableCaching
 @AllArgsConstructor
 public class ScraperScheduler {
 
@@ -25,6 +29,7 @@ public class ScraperScheduler {
     private final Scraper yahooFinanceScraper;
 
     //배당금 데이터 일정 주기마다 수행.
+    @CacheEvict(value = CacheKey.KEY_FINANCE, allEntries = true) //=>레디스 캐시에 finance 에 해당하는 데이터는 비운다.
     @Scheduled(cron = "${scheduler.scrap.yahoo}") //application.yml에 경로 지정.
     public void yahooFinanceScheduling() {
         log.info("scraping scheduler is started");
@@ -34,10 +39,8 @@ public class ScraperScheduler {
         //회사마다 배당금 정보를 새로 스크래핑
         for (var company : companies) {
             log.info("scrapping scheduler is started -> " + company.getName());
-            ScrapedResult scrapedResult = yahooFinanceScraper.scrap(Company.builder()
-                    .name(company.getName())
-                    .ticker(company.getTicker())
-                    .build());
+            ScrapedResult scrapedResult = yahooFinanceScraper.scrap(
+                    new Company(company.getTicker(), company.getName()));
 
             //스크래핑한 배당금 정보 중 데이터베이스에 없는 값은 저장
             //배당금 리스트 : dividens를 하나씩 순회.
@@ -61,6 +64,4 @@ public class ScraperScheduler {
             }
         }
     }
-
-
 }
