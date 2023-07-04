@@ -31,37 +31,37 @@ public class CompanyService {
 
     //스크랩한 데이터 저장
     public Company save(String ticker) {
-        boolean exists = this.companyRepository.existsByTicker(ticker);
+        boolean exists = companyRepository.existsByTicker(ticker);
         if (exists) {
             throw new RuntimeException("already exists ticker -> " + ticker);
         }
-        return this.storeCompanyAndDividend(ticker);
+        return storeCompanyAndDividend(ticker);
     }
 
     //저장한 회사의 instance 정보, DB에 저장을 하지 않은 회사에만 저장.
     private Company storeCompanyAndDividend(String ticker) {
         // ticker를 기준으로 회사를 스크래핑
-        Company company = this.yahooFinanceScraper.scrapCompanyByTicker(ticker);
+        Company company = yahooFinanceScraper.scrapCompanyByTicker(ticker);
         if (ObjectUtils.isEmpty(company)) {
             throw new RuntimeException("failed to scrap ticker -> " + ticker);
         }
 
         //해당 회사가 존재할 경우, 회사의 배당금 정보 스크래핑.
-        ScrapedResult scrapedResult = this.yahooFinanceScraper.scrap(company);
+        ScrapedResult scrapedResult = yahooFinanceScraper.scrap(company);
 
         //스크래핑 결과는 Entity타입으로 저장이 되어야함.
-        CompanyEntity companyEntity = this.companyRepository.save(new CompanyEntity(company));
+        CompanyEntity companyEntity = companyRepository.save(new CompanyEntity(company));
         List<DividendEntity> dividendEntities = scrapedResult.getDividends().stream()   //dividend item 하나가 e -> foreach 처럼
                 .map(e -> new DividendEntity(companyEntity.getId(), e)) //collection element(요소)들 다른 값으로 매핑해야할 때.
                 .collect(Collectors.toList());
-        this.dividendRepository.saveAll(dividendEntities);
+        dividendRepository.saveAll(dividendEntities);
         return company;
     }
 
     //회사 리스트 조회
     public Page<CompanyEntity> getAllCompany(Pageable pageable) {
         //실직적으로 회사 정보는 수천 수만가지니까 필요한 부분만 노출 시킬 필요성있음 -> Pageable 기능 구현
-        return this.companyRepository.findAll(pageable);
+        return companyRepository.findAll(pageable);
     }
 
     //자동 완성(데이터 저장) - trie

@@ -5,16 +5,21 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import zerobase.dividend.model.Dividend;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity(name = "DIVIDEND")
 @Getter
 @ToString
 @NoArgsConstructor
+//복합 유니크 키 설정 : 인덱스이자 제약조건(배당금 데이터가 중복으로 저장되는 것 방지)
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        columnNames = { "companyId", "date" }
+                )
+        }
+)
 public class DividendEntity {
 
     @Id
