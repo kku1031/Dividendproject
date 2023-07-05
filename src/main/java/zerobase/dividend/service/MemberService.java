@@ -9,8 +9,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import zerobase.dividend.model.Auth;
-import zerobase.dividend.persist.entity.MemberEntity;
 import zerobase.dividend.persist.MemberRepository;
+import zerobase.dividend.persist.entity.MemberEntity;
 
 @Slf4j
 @Service
