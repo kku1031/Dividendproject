@@ -55,7 +55,7 @@ public class TokenProvider {
                 .setClaims(claims)
                 .setIssuedAt(nowDate)   //토큰 생성 시간
                 .setExpiration(expiredDate) //토큰 만료 시간
-                .signWith(SignatureAlgorithm.ES512, secretKey) //사용할 암호화 알고리즘, 비밀키
+                .signWith(SignatureAlgorithm.HS512, secretKey) //사용할 암호화 알고리즘, 비밀키
                 .compact();
     }
 
