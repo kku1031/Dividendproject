@@ -8,8 +8,12 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import zerobase.dividend.service.MemberService;
 
 import java.util.Date;
 import java.util.List;
@@ -23,6 +27,8 @@ public class TokenProvider {
 
     //회원가입 권한 역할
     private static final String KEY_ROLES = "roles";
+
+    private final MemberService memberService;
 
     //토큰값 ubuntu cmd에서 echo 'zerobase-spring-boot-dividend-project-tutorial-jwt-secret-key' | base64로 생성
     @Value("${spring.jwt.secret}")
@@ -52,6 +58,14 @@ public class TokenProvider {
                 .signWith(SignatureAlgorithm.ES512, secretKey) //사용할 암호화 알고리즘, 비밀키
                 .compact();
     }
+
+    //토큰 인증 정보 : 사용자의 정보와 권한 정보 포함.
+    public Authentication getAuthentication(String jwt) {
+        UserDetails userDetails = memberService.loadUserByUsername(getUsername(jwt));
+        //스프링에서 지원하는 형태의 토큰으로 변환.
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
+
 
     public String getUsername(String token) {
         //generateToken메소드에서 넣어준 setSubject(username)값 반환

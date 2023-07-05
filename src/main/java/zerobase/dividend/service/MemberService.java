@@ -17,7 +17,7 @@ import zerobase.dividend.persist.MemberRepository;
 @AllArgsConstructor
 public class MemberService implements UserDetailsService {
 
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
 
     @Override
@@ -28,7 +28,7 @@ public class MemberService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("couldn't find user -> " + username));
     }
 
-    //회원가입 기능
+    //회원가입
     public MemberEntity register(Auth.SignUp member) {
         boolean exists = memberRepository.existsByUsername(member.getUsername());
         if (exists) {
@@ -40,8 +40,16 @@ public class MemberService implements UserDetailsService {
         return result;
     }
 
-    //로그인 시 중복 ID 검증.
+    //로그인 시 중복 ID 검증, 패스워드 인증 작업
     public MemberEntity authenticate(Auth.SignIn member) {
-       return null;
+        MemberEntity user = memberRepository.findByUsername(member.getUsername())
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 ID 입니다."));
+
+        //user에 들어있는 password는 Encoding 된 형태 member의 비밀번호와 비교해서 match시켜야함.
+        if (!passwordEncoder.matches(member.getPassword(), user.getPassword())) {
+            throw new RuntimeException("비밀번호가 일치하지 않습니다");
+        }
+
+        return user;
     }
 }
