@@ -2,6 +2,7 @@ package zerobase.dividend.service;
 
 import lombok.AllArgsConstructor;
 import org.apache.commons.collections4.Trie;
+import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +17,7 @@ import zerobase.dividend.persist.entity.DividendEntity;
 import zerobase.dividend.scraper.Scraper;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service            //싱글톤 관리 : 프로그램 실행되는 동안, instance는 하나만 사용됨
@@ -89,5 +91,22 @@ public class CompanyService {
         return companyEntities.stream()
                                 .map(e -> e.getName())
                                 .collect(Collectors.toList());
+    }
+
+    //회사 삭제
+    public String deleteCompany(String ticker) {
+        //CompanyEntity 삭제
+        CompanyEntity company = companyRepository.findByTicker(ticker)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 회사 입니다."));
+        //배당금 데이터 삭제
+        dividendRepository.deleteAllByCompanyId(company.getId());
+
+        //companyRepository 삭제
+        companyRepository.delete(company);
+
+        //자동완성에 저장된 회사 정보 삭제
+        deleteAutocompleteKeyword(company.getName());
+//        getCompanyNamesByKeyword(company.getName());
+       return company.getName();
     }
 }
