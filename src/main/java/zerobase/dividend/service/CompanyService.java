@@ -1,13 +1,14 @@
 package zerobase.dividend.service;
 
+
 import lombok.AllArgsConstructor;
 import org.apache.commons.collections4.Trie;
-import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import zerobase.dividend.exception.impl.NoCompanyException;
 import zerobase.dividend.model.Company;
 import zerobase.dividend.model.ScrapedResult;
 import zerobase.dividend.persist.CompanyRepository;
@@ -17,7 +18,6 @@ import zerobase.dividend.persist.entity.DividendEntity;
 import zerobase.dividend.scraper.Scraper;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service            //싱글톤 관리 : 프로그램 실행되는 동안, instance는 하나만 사용됨
@@ -89,15 +89,15 @@ public class CompanyService {
         Pageable limit = PageRequest.of(0, 10);
         Page<CompanyEntity> companyEntities = companyRepository.findByNameStartingWithIgnoreCase(keyword, limit);
         return companyEntities.stream()
-                                .map(e -> e.getName())
-                                .collect(Collectors.toList());
+                .map(e -> e.getName())
+                .collect(Collectors.toList());
     }
 
     //회사 삭제
     public String deleteCompany(String ticker) {
         //CompanyEntity 삭제
         CompanyEntity company = companyRepository.findByTicker(ticker)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 회사 입니다."));
+                .orElseThrow(NoCompanyException::new);
         //배당금 데이터 삭제
         dividendRepository.deleteAllByCompanyId(company.getId());
 
@@ -107,6 +107,6 @@ public class CompanyService {
         //자동완성에 저장된 회사 정보 삭제
         deleteAutocompleteKeyword(company.getName());
 //        getCompanyNamesByKeyword(company.getName());
-       return company.getName();
+        return company.getName();
     }
 }

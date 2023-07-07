@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import zerobase.dividend.exception.impl.NoCompanyException;
 import zerobase.dividend.model.Company;
 import zerobase.dividend.model.Dividend;
 import zerobase.dividend.model.ScrapedResult;
@@ -34,7 +35,7 @@ public class FinanceService {
         //Optional : 값이 없는 경우 처리 유용(회사명 잘못 입력 or 아직 서비스에 입력안된 경우 등등)
         CompanyEntity company = companyRepository.findByName(companyName)
                 //.orElseThrow() : 값이 없는 경우 -> Exception 발생, 정상일때 : Optional로 감싸진 값이 아닌 제 값 추출
-                                           .orElseThrow(() -> new RuntimeException("존재하지 않는 회사명입니다."));
+                                                    .orElseThrow(NoCompanyException::new);
         //2. 조회된 회사 ID로 배당금 정보 조회
         List<DividendEntity> dividendEntities = dividendRepository.findAllByCompanyId(company.getId());
 

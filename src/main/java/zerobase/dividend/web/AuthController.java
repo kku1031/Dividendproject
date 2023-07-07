@@ -35,7 +35,7 @@ public class AuthController {
         MemberEntity member = memberService.authenticate(request);
         //정상 로그인 후 Entity기준으로 token 으로 권한 부여.
         String token = tokenProvider.generateToken(member.getUsername(), member.getRoles());
-        log.info("user login -> " + request.getUsername());
+        log.info(request.getUsername() + "님이 로그인 하셨습니다." );
         return ResponseEntity.ok(token);
     }
 
